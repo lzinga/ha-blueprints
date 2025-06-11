@@ -1,0 +1,45 @@
+blueprint:
+  name: Camera Detection
+  description: ''
+  domain: automation
+  input:
+    notify_device:
+      name: Device to notify
+      description: Device needs to run the official Home Assistant app to receive notifications
+      selector:
+        device:
+          integration: mobile_app
+    camera:
+      name: Camera
+      description: Camera for which this detection is running
+      selector:
+        entity:
+          domain: camera
+    person_sensor:
+      name: Person detection sensor
+      description: Binary sensor which is on when a person is detected
+      selector:
+        entity:
+          domain: binary_sensor
+    vehicle_sensor:
+      name: (OPTIONAL) Vehicle detection sensor
+      description: Binary sensor which is on when a vehicle is detected
+      selector:
+        entity:
+          domain: binary_sensor
+      default: null
+
+trigger:
+  - platform: state
+    entity_id: !input person_sensor
+    to: 'on'
+
+action:
+  - service: notify.mobile_app_{{ device_id }}
+    data:
+      message: "Person detected on {{ state_attr(camera, 'friendly_name') }}"
+      data:
+        actions:
+          - action: "URI"
+            title: "View Camera"
+            uri: "entityId:{{ camera }}"
