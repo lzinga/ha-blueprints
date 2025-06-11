@@ -1,5 +1,5 @@
 blueprint:
-  name: Camera Detection
+  name: Camera Detection 2.0
   description: ''
   domain: automation
   input:
@@ -24,22 +24,94 @@ blueprint:
     vehicle_sensor:
       name: (OPTIONAL) Vehicle detection sensor
       description: Binary sensor which is on when a vehicle is detected
+      default:
       selector:
         entity:
           domain: binary_sensor
-      default: null
-
+    pet_sensor:
+      name: (OPTIONAL) Pet detection sensor
+      description: Binary sensor which is on when a pet is detected
+      default:
+      selector:
+        entity:
+          domain: binary_sensor
+    store_location:
+      name: Folder to store snapshots in
+      description: Folder within your www folder where snapshots should be stored. Do not include www directory.
+      default: 'doorbell'
+      selector:
+        text:
+    no_motion_wait:
+      name: Time between notifications (seconds)
+      description: Time in seconds to wait before sending another notification of motion (to avoid spamming).
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
+    blocker_entity:
+      name: (OPTIONAL) Blocking entity
+      description: If this entity's state is on, it will prevent the automation from running. E.g. sleepmode or away mode.
+      default:
+      selector:
+        entity:
+          domain: binary_sensor
+    navigate_entity:
+      name: Entity to open on notification click
+      description: The entity whose More Info panel will open when the notification is clicked.
+      selector:
+        entity: {}
+  source_url: https://github.com/lzinga/ha-blueprints/edit/main/camera_detection.yaml
+mode: single
+max_exceeded: silent
+variables:
+  notify_device: !input 'notify_device'
+  camera: !input 'camera'
+  blocker_entity: !input 'blocker_entity'
+  no_motion_wait: !input 'no_motion_wait'
+  store_location: !input 'store_location'
+  navigate_entity: !input 'navigate_entity'
+trigger_variables:
+  vehicle_sensor: !input 'vehicle_sensor'
+  pet_sensor: !input 'pet_sensor'
 trigger:
   - platform: state
-    entity_id: !input person_sensor
+    entity_id: !input 'person_sensor'
+    from: 'off'
     to: 'on'
-
+    id: 'person'
+  - platform: template
+    value_template: "{{ is_state ( vehicle_sensor , 'on' ) }}"
+    id: 'vehicle'
+  - platform: template
+    value_template: "{{ is_state ( pet_sensor , 'on' ) }}"
+    id: 'pet'
+condition:
+- condition: template
+  value_template: '{{ (blocker_entity == none) or (states[blocker_entity].state == ''off'') }}'
 action:
-  - service: notify.mobile_app_{{ device_id }}
+- service: camera.snapshot
+  data:
+    filename: /config/www/{{store_location}}/{{ trigger.to_state.last_changed | as_timestamp | timestamp_custom("%Y-%m-%d_%H-%M-%S") }}.jpg
+  target:
+    entity_id: !input 'camera'
+- service: notify.mobile_app_{{ device_attr(notify_device, 'name').lower() | regex_replace(find=' ', replace='_', ignorecase=False) }}
+  data:
+    title: Camera Detection
+    message: "{{ state_attr(camera, 'friendly_name') }} has detected a {{trigger.id}}"
     data:
-      message: "Person detected on {{ state_attr(camera, 'friendly_name') }}"
-      data:
-        actions:
-          - action: "URI"
-            title: "View Camera"
-            uri: "entityId:{{ camera }}"
+      image: /local/{{store_location}}/{{ trigger.to_state.last_changed | as_timestamp | timestamp_custom("%Y-%m-%d_%H-%M-%S") }}.jpg
+      channel: Motion
+      importance: high
+      ttl: 0
+      priority: high
+      notification_icon: mdi:cctv
+      actions:
+        - action: "URI"
+          title: "View Entity"
+          uri: "entityId:{{ navigate_entity }}"
+- condition: template
+  value_template: '{{ no_motion_wait != none }}'
+- delay:
+    seconds: '{{ no_motion_wait | int }}'
