@@ -1,54 +1,29 @@
-# https://community.home-assistant.io/t/automatic-air-conditioner/511251
 blueprint:
   name: Automatic air conditioner for winter and summer, monitoring presence, window status, water level and time slot.
-  description:  "`- Version: 1.0 -`\n\n This blueprint is for using the air conditioner automatically in both winter and summer, based on a start and end temperature. 
+  description: |
+    - Version: 1.0 -
+    This blueprint is for using the air conditioner automatically in both winter and summer, based on a start and end temperature.
 
-          Optionally, you can enable:
-
-          - Window status check 
-
-          - Water level control in the tank 
-          
-          - Home presence control 
-          
-          - Notifications (English and Italian) 
-          
-          - Decide on the time slot for operation"
-
+    Optionally, you can enable:
+      - Window status check
+      - Water level control in the tank
+      - Home presence control
+      - Notifications (English only)
+      - Decide on the time slot for operation
 
   domain: automation
   input:
 
-    language:
-      name: Select language
-      description: 'Select the language for the text of notifications.
-
-
-                   Selezionare la lingua per il testo delle notifiche.'
-      default: Italiano
-      selector:
-        select:
-          mode: dropdown
-          options:
-            - Italiano
-            - English
-
     climate:
       name: Entities climate
-      description: 'Select climate entities to be used. 
-      
-
-                   Selezionare entità climate da utiluizzare. '
+      description: 'Select climate entities to be used.'
       selector:
         entity:
           domain: climate
 
     season:
       name: Select season
-      description: 'Select the season of use. 
-      
-
-                   Selezionare la stagione di utilizzo'
+      description: 'Select the season of use.'
       default: Summer
       selector:
         select:
@@ -59,25 +34,19 @@ blueprint:
 
     set_temperature_climate:
       name: Set temperature climate
-      default: 25
-      description: 'Select the temperature to be set at climate. 
-
-      
-                   Selezionare la temperatura da impostare al climate.'
+      default: 77
+      description: 'Select the temperature to be set at climate (°F).'
       selector:
         number:
-          min: 15
-          max: 30
-          unit_of_measurement: °C
+          min: 59
+          max: 86
+          unit_of_measurement: °F
           mode: slider
           step: 1
 
     hvac_modes:
       name: Hvac modes
-      description: 'Select the mode to be set to the air conditioner. 
-
-      
-                   Selezionare la modalità da impostare al condizionatore.'
+      description: 'Select the mode to be set to the air conditioner.'
       default: dry
       selector:
         select:
@@ -90,10 +59,7 @@ blueprint:
 
     fan_modes:
       name: Fan modes
-      description: 'Select the ventilation speed to be set at the air conditioner. 
-
-      
-                   Selezionare la velocità di ventilazione da impostare al condizionatore. '
+      description: 'Select the ventilation speed to be set at the air conditioner.'
       default: auto
       selector:
         select:
@@ -106,10 +72,7 @@ blueprint:
 
     presence_home:
       name: Presence Home
-      description: 'Select the group consisting of person.. 
-      
-
-                   Selezionare il group composto da person.'
+      description: 'Select the group consisting of person.'
       default: group.presence_home_disabled
       selector:
         entity:
@@ -118,10 +81,7 @@ blueprint:
     moisture:
       name: Water level
       default: binary_sensor.moisture_disabled
-      description: 'Select the binary_sensor used to measure the state of the water container. 
-
-      
-                   Selezionare il binary_sensor usato per misurare lo stato del contenitore acqua. '
+      description: 'Select the binary_sensor used to measure the state of the water container.'
       selector:
         entity:
           domain: binary_sensor
@@ -130,10 +90,7 @@ blueprint:
     window:
       name: Window
       default: binary_sensor.window_disabled
-      description: 'Select the binary_sensor used for the window. 
-
-      
-                   Selezionare il binary_sensor usato per la finestra. '
+      description: 'Select the binary_sensor used for the window.'
       selector:
         entity:
           domain: binary_sensor
@@ -141,41 +98,32 @@ blueprint:
 
     target_temperature_start:
       name: Target temperature start
-      default: 25
-      description: 'Set the startup target temperature. 
-
-      
-                   Impostare la temperatura target di avvio. '
+      default: 77
+      description: 'Set the startup target temperature (°F).'
       selector:
         number:
-          min: 15
-          max: 30
-          unit_of_measurement: °C
+          min: 59
+          max: 86
+          unit_of_measurement: °F
           mode: slider
           step: 1
 
     target_temperature_stop:
       name: Target temperature stop
-      default: 21
-      description: 'Set the target temperature for shutdown. 
-
-
-                   Impostare la temperatura target per lo spegnimento. '
+      default: 70
+      description: 'Set the target temperature for shutdown (°F).'
       selector:
         number:
-          min: 15
-          max: 30
-          unit_of_measurement: °C
+          min: 59
+          max: 86
+          unit_of_measurement: °F
           mode: slider
           step: 1
 
     delay_temperature_stop:
       default: 10
       name: Delay temperature stop
-      description: 'Set the climate shutdown delay since the target temperature has been reached. 
-
-      
-                   Impostare il ritardo spegnimento climate dal momento che è stata raggiunta la temperatura target. '
+      description: 'Set the climate shutdown delay since the target temperature has been reached (min).'
       selector:
         number:
           min: 0
@@ -187,30 +135,21 @@ blueprint:
     start_time:
       name: Start time
       default: "00:00:00"
-      description: 'Set automatic operation start time. 
-      
-
-                   Impostare orario inizio funzionamento automatico. '
+      description: 'Set automatic operation start time.'
       selector:
         time: 
 
     stop_time:
       name: Stop time
       default: "00:00:00"
-      description: 'Set automatic operation end time. 
-
-      
-                   Impostare orario fine funzionamento automatico. '
+      description: 'Set automatic operation end time.'
       selector:
         time: 
 
     notify_device:
       name: Device to notify push
       default: false
-      description: 'Device needs to run the official Home Assistant app to receive notifications.
-
-      
-                    Il dispositivo deve eseguire app ufficiale Home Assistant per ricevere le notifiche.'
+      description: 'Device needs to run the official Home Assistant app to receive notifications.'
       selector:
         device: 
           integration: mobile_app
@@ -222,7 +161,6 @@ variables:
   climate: !input climate
   target_temperature_stop: !input target_temperature_stop
   window: !input window
-  language: !input language
   presence_home: !input presence_home
 trigger:
 - platform: state
@@ -282,20 +220,16 @@ trigger:
       - home
   id: presence_home
 action:
-- alias: Avviso tanica piena
+- alias: Water tank full warning
   if: 
     - "{{ trigger.id == 'moisture_notify' and not is_state(climate,'off')}}"
   then: 
     - domain: mobile_app
       type: notify
       device_id: !input notify_device
-      title: "{% if language == 'Italiano' %}CONDIZIONATORE
-              {% else %}AIR CONDITIONER.
-              {% endif %}"
-      message: "{% if language == 'Italiano' %}Contenitore scarico acqua condizionatore pieno, spegnimento automatico tra 5 minuti.
-                {% else %} Air conditioner water discharge container full, automatic shutdown in 5 minutes.
-                {% endif %}"
-- alias: Accensione climate
+      title: "AIR CONDITIONER"
+      message: "Air conditioner water discharge container full, automatic shutdown in 5 minutes."
+- alias: Turn on climate
   if:
     - "{{is_state(climate,'off')}}"
     - condition: time
@@ -306,7 +240,7 @@ action:
       - "{{ (trigger.id == 'climate_on' or trigger.id == 'window' or (trigger.id == 'presence_home' and trigger.to_state.state == 'home')) and season == 'Winter' and (state_attr(climate,'current_temperature')|float(0) < target_temperature_start|float(0) )}}"
       - "{{ (trigger.id == 'climate_on' or trigger.id == 'window'or (trigger.id == 'presence_home' and trigger.to_state.state == 'home')) and season == 'Summer' and (state_attr(climate,'current_temperature')|float(0) > target_temperature_start|float(0) )}}"
   then:
-      - alias: Controllo finestra
+      - alias: Window check
         if: 
           - " {{ window == 'binary_sensor.window_disabled' or states(window) == 'off'}}"
         then: 
@@ -324,23 +258,15 @@ action:
           - domain: mobile_app
             type: notify
             device_id: !input notify_device
-            title: "{% if language == 'Italiano' %}CONDIZIONATORE
-                    {% else %}AIR CONDITIONER.
-                    {% endif %}"
-            message: "{% if language == 'Italiano' %}Accensione condizionatore eseguita ci sono {{state_attr(climate,'current_temperature')|float(0)}}°
-                      {% else %} Turn on air conditioner performed there are {{state_attr(climate,'current_temperature')|float(0)}}°
-                      {% endif %}"
+            title: "AIR CONDITIONER"
+            message: "Turn on air conditioner performed, current temperature is {{state_attr(climate,'current_temperature')|float(0)}}°F."
         else:
           - domain: mobile_app
             type: notify
             device_id: !input notify_device
-            title: "{% if language == 'Italiano' %}CONDIZIONATORE
-                    {% else %}  AIR CONDITIONER.
-                    {% endif %}"
-            message: "{% if language == 'Italiano' %}Accensione condizionatore non eseguito perchè hai lasciato aperta la finesta.
-                      {% else %} Turning on air conditioner not performed because you left the window open.
-                      {% endif %}"
-- alias: Spegni climate
+            title: "AIR CONDITIONER"
+            message: "Turning on air conditioner not performed because you left the window open."
+- alias: Turn off climate
   if: 
     - "{{not is_state(climate,'off')}}"
     - or: 
@@ -357,14 +283,12 @@ action:
       - domain: mobile_app
         type: notify
         device_id: !input notify_device
-        title: "{% if language == 'Italiano' %}CONDIZIONATORE   
-                {% else %}  AIR CONDITIONER.
-                {% endif %}"
-        message: "{% if language == 'Italiano' and trigger.id == 'window' %}Condizionatore spento perchè è stata aperta la finestra.
-                  {% elif language == 'Italiano' and (trigger.id == 'climate_off' or trigger.id == 'presence_home')%} Spegnimento automatico condizionatore.
-                  {% elif language == 'Italiano' and trigger.id == 'moisture_climate_off' %} Condizionatore spento per contenitore scarico acqua pieno.
-                  {% elif language == 'English' and trigger.id == 'window' %} Air conditioner turned off because the window was opened.
-                  {% elif language == 'English' and (trigger.id == 'climate_off' or trigger.id == 'presence_home')%} Automatic air conditioner shutdown.
-                  {% elif language == 'English' and trigger.id == 'moisture_climate_off' %} Air conditioner off for water drain container full.
-                  {% endif %}"
-          
+        title: "AIR CONDITIONER"
+        message: >-
+          {% if trigger.id == 'window' %}
+            Air conditioner turned off because the window was opened.
+          {% elif trigger.id == 'climate_off' or trigger.id == 'presence_home' %}
+            Automatic air conditioner shutdown.
+          {% elif trigger.id == 'moisture_climate_off' %}
+            Air conditioner off for water drain container full.
+          {% endif %}
