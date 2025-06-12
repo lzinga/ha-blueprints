@@ -86,22 +86,22 @@ blueprint:
       name: High Temperature Threshold
       description: >
         Temperature threshold above which HVAC will be turned off immediately when windows are opened (optional).
-      default: 25
+      default: 77
       selector:
         number:
-          min: 15
-          max: 40
+          min: 59
+          max: 104
           unit_of_measurement: "°F"
           step: 0.5
     temp_low_threshold:
       name: Low Temperature Threshold
       description: >
         Temperature threshold below which HVAC will be turned off immediately when windows are opened (optional).
-      default: 15
+      default: 59
       selector:
         number:
-          min: -5
-          max: 20
+          min: 23
+          max: 68
           unit_of_measurement: "°F"
           step: 0.5
     daytime_hvac_timeout:
@@ -499,7 +499,7 @@ action:
           value_template: "{{ temperature_sensor | length > 0 }}"
         - condition: numeric_state
           entity_id: !input temperature_sensor
-          below: 15
+          below: 59
         sequence:
         - device_id: !input notify_device
           domain: mobile_app
@@ -507,7 +507,7 @@ action:
           message: >
             🥶 Reminder: The window or door in {{ area_name(window_sensors[0]) | default('an unknown area') }} has been open for {{
               state_attr(window_open_timer, 'duration').split(':')[1] | int
-            }} minutes. The outside temperature is below 15°F. Please check your windows.
+            }} minutes. The outside temperature is below 59°F. Please check your windows.
       # Default reminder without temperature data
       - conditions:
         - condition: template
