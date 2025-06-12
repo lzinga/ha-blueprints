@@ -1,3 +1,4 @@
+# https://community.home-assistant.io/t/yet-another-automatic-hvac-control-blueprint-yaahcb-following-the-kiss-principle/786002
 blueprint:
   name: "🏰 Yet Another Automatic HVAC Control Bluprint (YAAHCB) following the KISS Principle"
   description: >
