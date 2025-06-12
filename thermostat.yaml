@@ -1,5 +1,5 @@
 blueprint:
-  name: HVAC Auto On/Off with Energy Savings & Presence
+  name: HVAC Auto On/Off with Energy Savings and Presence
   description: "Automated HVAC control with delays, presence, notifications, and no extra helpers"
   domain: automation
 
@@ -80,7 +80,7 @@ input:
       boolean:
   presence_entity:
     name: Presence Entity
-    description: "Select your presence entity (e.g. device_tracker.your_phone, group.all_devices, person.your_name)"
+    description: "Select your presence entity (e.g. device_tracker.your_phone)"
     required: false
     selector:
       entity:
